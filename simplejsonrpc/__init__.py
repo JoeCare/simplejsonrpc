@@ -18,7 +18,7 @@ except ImportError:
     import json
 
 import inspect
-    
+
 version = '2.0'
 
 class SimpleJSONRPCService:
