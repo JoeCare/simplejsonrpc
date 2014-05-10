@@ -44,7 +44,7 @@ class json_handler:
     def POST(self):
         return api_service(web.webapi.data())
 
-@jsonremote(api_service, doc='ping server')
+@jsonremote(api_service, doc='print api documentation')
 def api(request):
     return api_service.api()
     
@@ -87,19 +87,19 @@ class json_handler_v1:
     def POST(self):
         return api_service_v2(web.webapi.data())
 
+@jsonremote(api_service_v1, doc='print api documentation')
+def api(request):
+    return api_service_v1.api()
+
 @jsonremote(api_service_v1, doc='ping server')
 def ping(request):
     return "pong"
 
-@jsonremote(api_service_v1,doc='print api documentation')
-def api(request):
-    return api_service_v1.api()
-
-@jsonremote(api_service_v2, name='api' doc='print api documentation')
+@jsonremote(api_service_v2, name='api', doc='print api documentation')
 def api_v2(request):
     return api_service_v2.api()
 
-@jsonremote(api_service_v2, name='ping' doc='ping server')
+@jsonremote(api_service_v2, name='ping', doc='ping server')
 def ping_v2(request):
     return "pong"
 
