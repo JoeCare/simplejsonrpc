@@ -76,7 +76,8 @@ class SimpleJSONRPCService:
         if self.api_version > 0:
             api_description['api_version']=self.api_version
         api_description['methods']={}
-        for k, v in self.method_map.iteritems():
+        for k in self.method_map:
+            v = self.method_map[k]
             # Document method, still some tweaking required
             api_description['methods'][k] = {}
             if k in self.doc_map:
