@@ -1,6 +1,8 @@
 simplejsonrpc
 =============
 
+[![Build Status](https://travis-ci.org/moritz-wundke/simplejsonrpc.svg?branch=master)](https://travis-ci.org/moritz-wundke/simplejsonrpc)
+
 Simple JSON-RPC 2.0 compilant middleware for python using decorators. With just a few lines of code you get a JSONRPC 2.0 compilant web API running and ready for your needs!
 
 Usage
