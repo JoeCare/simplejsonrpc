@@ -6,7 +6,7 @@ Simple jsonrpc base implementation using decorators.
 
     loginservice = SimpleJSONRPCService(api_version=1)
 
-    @jsonremote(loginservice, 'login')
+    @jsonremote(loginservice, name='login', doc='Method used to log a user in')
     def login(request, user_name, user_pass):
         (...)
 """
@@ -31,13 +31,17 @@ class SimpleJSONRPCService:
         else:
             self.method_map = method_map
         self.api_version = api_version
+        self.doc_map = {}
     
     def add_method(self, name, method):
         self.method_map[name] = method
+
+    def add_doc(self, name, doc):
+        self.doc_map[name] = doc
     
-    def handle_rpc(self, data, request, node):
+    def handle_rpc(self, data, request):
         try:
-            json_version, method_id, method, params = data["jsonrpc"], data["id"], data["method"], [request, node,] + data["params"]
+            json_version, method_id, method, params = data["jsonrpc"], data["id"], data["method"], [request,] + data["params"]
             if json_version != "2.0":
                 return {'jsonrpc':version, 'id': None, "error": {"code": -32600, "message": "Invalid Request"},}
             if method in self.method_map:
@@ -54,14 +58,14 @@ class SimpleJSONRPCService:
         except TypeError:
             return {'jsonrpc':version, 'id': None, "error": {"code": -32600, "message": "Invalid Request"},}
         
-    def __call__(self, request, node):
+    def __call__(self, request):
         try:
             data = json.loads(request)
             if isinstance(data, dict):
-                return json.dumps(self.handle_rpc(data, request, node))
+                return json.dumps(self.handle_rpc(data, request))
             result_list = []
             for batch_rpc in data:
-                result_list.append(self.handle_rpc(batch_rpc, request, node))
+                result_list.append(self.handle_rpc(batch_rpc, request))
             return json.dumps(result_list)
         except ValueError:
             return json.dumps({'jsonrpc':version, 'id': None, "error": {"code": -32700, "message": "Parse error"},})
@@ -73,10 +77,14 @@ class SimpleJSONRPCService:
             api_description['api_version']=self.api_version
         api_description['methods']={}
         for k, v in self.method_map.iteritems():
-            api_description['methods'][k] = inspect.getargspec(v)
+            # Document method, still some tweaking required
+            api_description['methods'][k] = {}
+            if k in self.doc_map:
+                api_description['methods'][k]['doc'] = self.doc_map[k]
+            api_description['methods'][k]['def'] = inspect.getargspec(v)
         return api_description
 
-def jsonremote(service, name=None):
+def jsonremote(service, name=None, doc=None):
     """
     makes SimpleJSONRPCService a decorator so that you can write :
     
@@ -84,7 +92,7 @@ def jsonremote(service, name=None):
 
     loginservice = SimpleJSONRPCService(api_version=1)
 
-    @jsonremote(loginservice, 'login')
+    @jsonremote(loginservice, name='login', doc='Method used to log a user in')
     def login(request, user_name, user_pass):
         (...)
     
@@ -96,8 +104,10 @@ def jsonremote(service, name=None):
             if func_name is None:
                 func_name = func.__name__
             service.add_method(func_name, func)
+            if doc:
+                service.add_doc(func_name, doc)
         else:
-            raise NotImplementedError, 'Service "%s" not found' % str(service.__name__)
+            raise NotImplementedError('Service "%s" not an instance of SimpleJSONRPCService' % str(service))
         return func
 
     return remotify
