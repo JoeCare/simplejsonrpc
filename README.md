@@ -45,6 +45,10 @@ class json_handler:
         return api_service(web.webapi.data())
 
 @jsonremote(api_service, doc='ping server')
+def api(request):
+    return api_service.api()
+    
+@jsonremote(api_service, doc='ping server')
 def ping(request):
     return "pong"
 
@@ -90,10 +94,6 @@ def ping(request):
 @jsonremote(api_service_v1,doc='print api documentation')
 def api(request):
     return api_service_v1.api()
-
-@jsonremote(api, doc='ping server')
-def ping(request):
-    return "pong"
 
 @jsonremote(api_service_v2, name='api' doc='print api documentation')
 def api_v2(request):
