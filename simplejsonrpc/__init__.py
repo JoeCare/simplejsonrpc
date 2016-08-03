@@ -21,6 +21,18 @@ import inspect
 
 version = '2.0'
 
+class JSONRPCException(Exception):
+    """
+    Base exception class for program specific errors
+    """
+    def __init__(self, message, code, data):
+        super(JSONRPCException, self).__init__(message)
+
+        # Custom data
+        self.message = message
+        self.code = code
+        self.data = data
+
 class SimpleJSONRPCService:
     """
     Simple JSON RPC service
@@ -53,6 +65,8 @@ class SimpleJSONRPCService:
                 return {'jsonrpc':version, 'id': method_id, 'result': result}
             else:
                 return {'jsonrpc':version, 'id': method_id, "error": {"code": -32601, "message": "Method not found"},}
+        except JSONRPCException as e:
+            return {'jsonrpc':version, 'id': method_id, "error": {"code": e.code, "message": e.message, "data": e.data},}
         except KeyError:
             return {'jsonrpc':version, 'id': None, "error": {"code": -32700, "message": "Parse error"},}
         except TypeError:

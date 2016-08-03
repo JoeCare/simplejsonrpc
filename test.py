@@ -35,6 +35,19 @@ class TestJSONRPCService(unittest.TestCase):
             test_service_2(json.dumps({"jsonrpc": "2.0", "method": "test", "params": [], "id": 1})), 
             json.dumps({"jsonrpc": "2.0", "id": 1, "result": "ok2"}))
 
+    def testExceptions(self):
+        
+        test_service = SimpleJSONRPCService()
+
+        @jsonremote(test_service, name='test', doc='Test method')
+        def test(request):
+            raise JSONRPCException("Oh snap, this can happen.", 12345, {"data":"oh boy..."})
+
+        # the cexception should match
+        self.assertEqual(
+            test_service(json.dumps({"jsonrpc": "2.0", "method": "test", "params": [], "id": 1})), 
+            json.dumps({"jsonrpc": "2.0", "id": 1, "error": {"message": "Oh snap, this can happen.", "code": 12345, "data": {"data": "oh boy..."}}}))
+
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(TestJSONRPCService)
     unittest.TextTestRunner(verbosity=2).run(suite)
