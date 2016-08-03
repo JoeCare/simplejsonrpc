@@ -74,7 +74,7 @@ class SimpleJSONRPCService:
         
     def __call__(self, request):
         try:
-            data = json.loads(request)
+            data = request if isinstance(request, dict) else json.loads(request)
             if isinstance(data, dict):
                 return json.dumps(self.handle_rpc(data, request))
             result_list = []
