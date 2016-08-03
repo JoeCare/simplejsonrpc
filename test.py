@@ -18,8 +18,8 @@ class TestJSONRPCService(unittest.TestCase):
 
         # the call should complete successfully
         self.assertEqual(
-            test_service(json.dumps({"jsonrpc": "2.0", "method": "test", "params": [], "id": 1})), 
-            json.dumps({"jsonrpc": "2.0", "id": 1, "result": "ok"}))
+            json.dumps(json.loads(test_service(json.dumps({"jsonrpc": "2.0", "method": "test", "params": [], "id": 1}))), sort_keys=True), 
+            json.dumps({"jsonrpc": "2.0", "id": 1, "result": "ok"}, sort_keys=True))
 
         # Test a second api
         test_service_2 = SimpleJSONRPCService(api_version=2)
@@ -32,8 +32,8 @@ class TestJSONRPCService(unittest.TestCase):
 
         # the call should complete successfully
         self.assertEqual(
-            test_service_2(json.dumps({"jsonrpc": "2.0", "method": "test", "params": [], "id": 1})), 
-            json.dumps({"jsonrpc": "2.0", "id": 1, "result": "ok2"}))
+            json.dumps(json.loads(test_service_2(json.dumps({"jsonrpc": "2.0", "method": "test", "params": [], "id": 1}))), sort_keys=True), 
+            json.dumps({"jsonrpc": "2.0", "id": 1, "result": "ok2"}, sort_keys=True))
 
     def testExceptions(self):
         
@@ -45,8 +45,8 @@ class TestJSONRPCService(unittest.TestCase):
 
         # the cexception should match
         self.assertEqual(
-            test_service(json.dumps({"jsonrpc": "2.0", "method": "test", "params": [], "id": 1})), 
-            json.dumps({"jsonrpc": "2.0", "id": 1, "error": {"message": "Oh snap, this can happen.", "code": 12345, "data": {"data": "oh boy..."}}}))
+            json.dumps(json.loads(test_service(json.dumps({"jsonrpc": "2.0", "method": "test", "params": [], "id": 1}))), sort_keys=True), 
+            json.dumps({"jsonrpc": "2.0", "id": 1, "error": {"message": "Oh snap, this can happen.", "code": 12345, "data": {"data": "oh boy..."}}}, sort_keys=True))
 
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(TestJSONRPCService)
