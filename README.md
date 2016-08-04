@@ -5,6 +5,15 @@ simplejsonrpc
 
 Simple JSON-RPC 2.0 compilant middleware for python using decorators. With just a few lines of code you get a JSONRPC 2.0 compilant web API running and ready for your needs!
 
+Install
+----
+
+Just install it though pip:
+
+```sh
+pip install simplejsonrpc
+```
+
 Usage
 ----
 
